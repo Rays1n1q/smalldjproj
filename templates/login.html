@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card mt-5">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>Вход</h4>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email (корпоративный)</label>
+                        <input type="email" class="form-control" id="email" name="email" required autofocus>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

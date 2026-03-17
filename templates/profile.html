@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>Мой профиль</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Имя:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                
+                <hr>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
