@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="mb-4">Активные объявления</h1>
+<div class="row">
+    {% for ann in announcements %}
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5>{{ ann.title }}</h5>
+                <p>{{ ann.description|truncatewords:30 }}</p>
+                <a href="{% url 'announcement_detail' ann.pk %}" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

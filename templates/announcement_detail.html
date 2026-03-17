@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ announcement.title }}</h2>
+<p>{{ announcement.description }}</p>
+<p><strong>Автор:</strong> {{ announcement.owner.username }}</p>
+
+{% if user == announcement.owner %}
+    <h4>Отклики ({{ responses.count }})</h4>
+    {% for resp in responses %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <p><strong>{{ resp.user.get_full_name|default:resp.user.username }}</strong></p>
+            <p>{{ resp.message|default:"Без сообщения" }}</p>
+            
+            {% if resp.status == 'accepted' %}
+                <div class="alert alert-success">
+                    <strong>Контакт:</strong> {{ resp.contact }}
+                </div>
+            {% endif %}
+            
+            <p><strong>Статус:</strong> {{ resp.get_status_display }}</p>
+            
+            {% if resp.status == 'pending' %}
+                <a href="{% url 'accept_response' resp.id %}" class="btn btn-success btn-sm">Принять</a>
+                <a href="{% url 'reject_response' resp.id %}" class="btn btn-danger btn-sm">Отклонить</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="mt-4">
+        <a href="{% url 'delete_announcement' announcement.pk %}" 
+           class="btn btn-danger btn-sm">
+            Удалить объявление
+        </a>
+    </div>
+    {% endfor %}
+{% else %}
+    <!-- форма отклика остаётся как была -->
+    <h4>Откликнуться</h4>
+    <form method="post" action="{% url 'add_response' announcement.pk %}">
+        {% csrf_token %}
+        {{ response_form.as_p }}
+        <button type="submit" class="btn btn-primary">Отправить отклик</button>
+    </form>
+{% endif %}
+{% endblock %}
