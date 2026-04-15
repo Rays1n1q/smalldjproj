@@ -17,21 +17,30 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from announcements.views import (
-    register, user_login, user_logout,   # ← новые
-    HomeView, create_announcement,
-    AnnouncementDetailView, add_response,
-    accept_response, reject_response, profile_view, delete_announcement,
+    register, 
+    user_login, 
+    user_logout,
+    HomeView, 
+    create_announcement,
+    AnnouncementDetailView, 
+    add_response,
+    accept_response, 
+    reject_response, 
+    profile_view, 
+    delete_announcement,
+    MyAnnouncementsView, 
+    MyResponsesView,
+    AnnouncementUpdateView,
+    delete_response,      # ← должен быть здесь
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     
     path('', HomeView.as_view(), name='home'),
-    
     path('register/', register, name='register'),
-    path('login/', user_login, name='login'),          # ← здесь
-    path('logout/', user_logout, name='logout'),       # ← здесь
-    
+    path('login/', user_login, name='login'),
+    path('logout/', user_logout, name='logout'),
     path('create/', create_announcement, name='create_announcement'),
     path('announcement/<int:pk>/', AnnouncementDetailView.as_view(), name='announcement_detail'),
     path('announcement/<int:pk>/respond/', add_response, name='add_response'),
@@ -39,4 +48,10 @@ urlpatterns = [
     path('response/<int:response_id>/reject/', reject_response, name='reject_response'),
     path('profile/', profile_view, name='profile'),
     path('announcement/<int:pk>/delete/', delete_announcement, name='delete_announcement'),
+    
+    # Новые страницы
+    path('my-announcements/', MyAnnouncementsView.as_view(), name='my_announcements'),
+    path('my-responses/', MyResponsesView.as_view(), name='my_responses'),
+    path('announcement/<int:pk>/edit/', AnnouncementUpdateView.as_view(), name='edit_announcement'),
+    path('response/<int:response_id>/delete/', delete_response, name='delete_response'),
 ]

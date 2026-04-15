@@ -1,9 +1,23 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Регистрация (только корпоративная почта)</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
-</form>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h4>Регистрация</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-success w-100 mt-2">Зарегистрироваться</button>
+                </form>
+                <div class="text-center mt-3">
+                    Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

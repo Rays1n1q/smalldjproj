@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="mb-4">Мои отклики</h2>
+
+{% for resp in responses %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>На объявление: {{ resp.announcement.title }}</h5>
+        <p><strong>Твоё сообщение:</strong> {{ resp.message|default:"Без сообщения" }}</p>
+        <p><strong>Контакт:</strong> {{ resp.contact }}</p>
+        <p><strong>Статус:</strong> 
+            <span class="badge 
+                {% if resp.status == 'accepted' %}bg-success
+                {% elif resp.status == 'rejected' %}bg-danger
+                {% else %}bg-warning{% endif %}">
+                {{ resp.get_status_display }}
+            </span>
+        </p>
+        <div class="mt-3">
+            {% if resp.status == 'pending' %}
+                <a href="{% url 'delete_response' resp.id %}" 
+                class="btn btn-outline-danger btn-sm"
+                onclick="return confirm('Удалить отклик?')">
+                    Удалить отклик
+                 </a>
+            {% endif %}
+        </div>
+        <small class="text-muted">{{ resp.created_at|date:"d.m.Y H:i" }}</small>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">
+    Вы ещё никуда не откликались.
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,5 +1,24 @@
-venv/
+# Django
+*.sqlite3
+*.sqlite3-journal
 db.sqlite3
-*.pyc
 __pycache__/
+*.pyc
+*.pyo
+media/
+staticfiles/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log

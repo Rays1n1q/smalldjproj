@@ -1,45 +1,62 @@
 {% extends 'base.html' %}
-{% block content %}
-<h2>{{ announcement.title }}</h2>
-<p>{{ announcement.description }}</p>
-<p><strong>Автор:</strong> {{ announcement.owner.username }}</p>
 
-{% if user == announcement.owner %}
-    <h4>Отклики ({{ responses.count }})</h4>
-    {% for resp in responses %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <p><strong>{{ resp.user.get_full_name|default:resp.user.username }}</strong></p>
-            <p>{{ resp.message|default:"Без сообщения" }}</p>
-            
-            {% if resp.status == 'accepted' %}
-                <div class="alert alert-success">
-                    <strong>Контакт:</strong> {{ resp.contact }}
-                </div>
-            {% endif %}
-            
-            <p><strong>Статус:</strong> {{ resp.get_status_display }}</p>
-            
-            {% if resp.status == 'pending' %}
-                <a href="{% url 'accept_response' resp.id %}" class="btn btn-success btn-sm">Принять</a>
-                <a href="{% url 'reject_response' resp.id %}" class="btn btn-danger btn-sm">Отклонить</a>
-            {% endif %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4>{{ announcement.title }}</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">{{ announcement.description }}</p>
+                <p><strong>Автор:</strong> {{ announcement.owner.get_full_name|default:announcement.owner.username }}</p>
+                <small class="text-muted">Опубликовано: {{ announcement.created_at|date:"d.m.Y в H:i" }}</small>
+            </div>
         </div>
+
+        {% if user == announcement.owner %}
+            <h4 class="mb-3">Отклики ({{ responses.count }})</h4>
+            
+            {% for resp in responses %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <strong>{{ resp.user.get_full_name|default:resp.user.username }}</strong>
+                    <p class="mt-2 mb-2">{{ resp.message|default:"Без сообщения" }}</p>
+                    
+                    {% if resp.status == 'accepted' %}
+                        <div class="alert alert-success py-2">
+                            <strong>Контакт:</strong> {{ resp.contact }}
+                        </div>
+                    {% endif %}
+                    
+                    <p><strong>Статус:</strong> {{ resp.get_status_display }}</p>
+
+                    {% if resp.status == 'pending' %}
+                        <a href="{% url 'accept_response' resp.id %}" class="btn btn-success btn-sm">Принять</a>
+                        <a href="{% url 'reject_response' resp.id %}" class="btn btn-danger btn-sm">Отклонить</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">Пока нет откликов.</p>
+            {% endfor %}
+
+        {% else %}
+            <div class="card">
+                <div class="card-header">
+                    <h5>Откликнуться</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'add_response' announcement.pk %}">
+                        {% csrf_token %}
+                        {{ response_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Отправить отклик</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
     </div>
-    <div class="mt-4">
-        <a href="{% url 'delete_announcement' announcement.pk %}" 
-           class="btn btn-danger btn-sm">
-            Удалить объявление
-        </a>
-    </div>
-    {% endfor %}
-{% else %}
-    <!-- форма отклика остаётся как была -->
-    <h4>Откликнуться</h4>
-    <form method="post" action="{% url 'add_response' announcement.pk %}">
-        {% csrf_token %}
-        {{ response_form.as_p }}
-        <button type="submit" class="btn btn-primary">Отправить отклик</button>
-    </form>
-{% endif %}
+</div>
 {% endblock %}

@@ -1,13 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin   # ← добавь
+from django.contrib.auth import login, authenticate, logout
 from django.views.generic import ListView, DetailView
-from .models import Announcement, Response
-from .forms import CustomUserCreationForm, ResponseForm
-from django.contrib.auth import authenticate, logout
+from django.db.models import Q
 from django.contrib import messages
-from .forms import CustomAuthenticationForm
+
+from .models import Announcement, Response, Profile
+from .forms import CustomUserCreationForm, ResponseForm, ProfileForm
 from django.contrib.auth.models import User
+from django.views.generic import UpdateView
+from django.urls import reverse_lazy
 
 def register(request):
     if request.method == 'POST':
@@ -20,11 +23,29 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
+
 class HomeView(ListView):
     model = Announcement
     template_name = 'home.html'
     context_object_name = 'announcements'
     ordering = ['-created_at']
+    paginate_by = 9  # ← сколько объявлений на странице
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('q', '')
+        
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) | 
+                Q(description__icontains=search_query)
+            )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
 
 @login_required
 def create_announcement(request):
@@ -142,3 +163,55 @@ def delete_announcement(request, pk):
     return render(request, 'announcement_confirm_delete.html', {
         'announcement': announcement
     })
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class MyAnnouncementsView(LoginRequiredMixin, ListView):
+    model = Announcement
+    template_name = 'my_announcements.html'
+    context_object_name = 'announcements'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        return Announcement.objects.filter(owner=self.request.user)
+
+
+# ====================== МОИ ОТКЛИКИ ======================
+class MyResponsesView(LoginRequiredMixin, ListView):
+    model = Response
+    template_name = 'my_responses.html'
+    context_object_name = 'responses'
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        return Response.objects.filter(user=self.request.user)
+    
+
+
+class AnnouncementUpdateView(LoginRequiredMixin, UpdateView):
+    model = Announcement
+    template_name = 'announcement_edit.html'
+    fields = ['title', 'description']
+    success_url = reverse_lazy('my_announcements')
+
+    def get_queryset(self):
+        # ← Важная защита!
+        return Announcement.objects.filter(owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['announcement'] = self.object
+        return context
+    
+@login_required
+def delete_response(request, response_id):
+    response = get_object_or_404(Response, id=response_id)
+    
+    # Можно удалять только свой отклик
+    if response.user == request.user:
+        response.delete()
+        messages.success(request, "Ваш отклик удалён.")
+    else:
+        messages.error(request, "Вы не можете удалить этот отклик.")
+    
+    return redirect('my_responses')

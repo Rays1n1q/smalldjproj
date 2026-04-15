@@ -1,10 +1,27 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h2>Новое объявление</h2>
-<form method="post">
-    {% csrf_token %}
-    <input type="text" name="title" class="form-control mb-3" placeholder="Заголовок" required>
-    <textarea name="description" class="form-control mb-3" rows="5" placeholder="Описание" required></textarea>
-    <button type="submit" class="btn btn-success">Опубликовать</button>
-</form>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4>Создать новое объявление</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Заголовок</label>
+                        <input type="text" name="title" class="form-control" required placeholder="Например: Ищу группу по Python">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="6" required placeholder="Подробно опиши, кого ищешь..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Опубликовать объявление</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

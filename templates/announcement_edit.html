@@ -2,22 +2,17 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-lg-8">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h4>Мой профиль</h4>
+                <h4>Редактировать объявление</h4>
             </div>
             <div class="card-body">
-                <p><strong>Username:</strong> {{ user.username }}</p>
-                <p><strong>Имя:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-                
-                <hr>
-                <h5>Дополнительная информация</h5>
                 <form method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                    <a href="{% url 'my_announcements' %}" class="btn btn-secondary">Отмена</a>
                 </form>
             </div>
         </div>
